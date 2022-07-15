@@ -1,0 +1,45 @@
+{
+  "resources": [
+    {
+      "name": "default-role",
+      "resource_type": "iam_role",
+      "role_arn": "arn:aws:iam::348052051973:role/helloworld-dev",
+      "role_name": "helloworld-dev"
+    },
+    {
+      "name": "invoke_comprehend",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:helloworld-dev-invoke_comprehend"
+    },
+    {
+      "name": "invoke_comprehend-s3event",
+      "resource_type": "s3_event",
+      "bucket": "chalice-test-348052051973",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:helloworld-dev-invoke_comprehend"
+    },
+    {
+      "name": "notify_comprehend_done_v2",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:helloworld-dev-notify_comprehend_done_v2"
+    },
+    {
+      "name": "notify_comprehend_done_v2-s3event",
+      "resource_type": "s3_event",
+      "bucket": "chalice-test-output-348052051973",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:helloworld-dev-notify_comprehend_done_v2"
+    },
+    {
+      "name": "api_handler",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:helloworld-dev"
+    },
+    {
+      "name": "rest_api",
+      "resource_type": "rest_api",
+      "rest_api_id": "uyya7ux117",
+      "rest_api_url": "https://uyya7ux117.execute-api.us-east-1.amazonaws.com/api/"
+    }
+  ],
+  "schema_version": "2.0",
+  "backend": "api"
+}
