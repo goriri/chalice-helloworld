@@ -1,6 +1,11 @@
 {
   "resources": [
     {
+      "name": "managed-layer",
+      "resource_type": "lambda_layer",
+      "layer_version_arn": "arn:aws:lambda:us-east-1:348052051973:layer:ab2-text-content-moderation-dev-managed-layer:3"
+    },
+    {
       "name": "default-role",
       "resource_type": "iam_role",
       "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev",
@@ -27,6 +32,17 @@
       "resource_type": "s3_event",
       "bucket": "ab2-fraud-detection-348052051973",
       "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_fraud_detection_result"
+    },
+    {
+      "name": "untar_result",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-untar_result"
+    },
+    {
+      "name": "untar_result-s3event",
+      "resource_type": "s3_event",
+      "bucket": "ab2-fraud-detection-348052051973",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-untar_result"
     }
   ],
   "schema_version": "2.0",

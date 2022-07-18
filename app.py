@@ -3,6 +3,12 @@ from chalice import Chalice
 import boto3
 import pandas as pd
 import json
+import os
+import tempfile
+import tarfile
+
+from concurrent import futures
+from io import BytesIO
 
 app = Chalice(app_name='helloworld')
 app.log.setLevel(logging.DEBUG)
@@ -62,22 +68,47 @@ def handle_fraud_detection_result(event):
 def json_to_series(labels):
     keys, values = zip(*[(label["Name"], label["Score"]) for label in labels])
     return pd.Series(values, index=keys)
-# The view function above will return {"hello": "world"}
-# whenever you make an HTTP GET request to '/'.
-#
-# Here are a few more examples:
-#
-# @app.route('/hello/{name}')
-# def hello_name(name):
-#    # '/hello/james' -> {"hello": "james"}
-#    return {'hello': name}
-#
-# @app.route('/users', methods=['POST'])
-# def create_user():
-#     # This is the JSON body the user sent in their POST request.
-#     user_as_json = app.current_request.json_body
-#     # We'll echo the json body back to the user in a 'user' key.
-#     return {'user': user_as_json}
-#
-# See the README documentation for more examples.
-#
+
+@app.on_s3_event(bucket='ab2-fraud-detection-348052051973',
+                 events=['s3:ObjectCreated:*'], prefix='output', suffix='tar.gz')
+def untar_result(event, context):
+    # Parse and prepare required items from event
+    s3uri = 's3://' + event.bucket + '/' + event.key
+    # Create temporary file
+    temp_file = tempfile.mktemp()
+
+    # Fetch and load target file
+    s3.download_file(event.bucket, event.key, temp_file)
+    tardata = tarfile.open(temp_file)
+
+    # Call action method with using ThreadPool
+    with futures.ThreadPoolExecutor(max_workers=4) as executor:
+        future_list = [
+            executor.submit(extract, filename, event.bucket, event.key, tardata)
+            for filename in tardata.getnames()
+        ]
+
+    result = {'success': [], 'fail': []}
+    for future in future_list:
+        filename, status = future.result()
+        result[status].append(filename)
+
+    # Remove extracted archive file
+    # s3.delete_object(Bucket=bucket, Key=key)
+
+    return result
+
+
+def extract(filename, bucket, key, tardata):
+    upload_status = 'success'
+    try:
+        s3.upload_fileobj(
+            BytesIO(tardata.extractfile(filename).read()),
+            bucket,
+            os.path.join(key, filename)
+        )
+    except Exception as e:
+        print(e)
+        upload_status = 'fail'
+    finally:
+        return filename, upload_status
