@@ -12,9 +12,9 @@ sns_client = boto3.client('sns')
 s3 = boto3.client('s3')
 
 
-@app.on_s3_event(bucket='chalice-test-348052051973',
-                 events=['s3:ObjectCreated:*'], suffix='csv')
-def invoke_comprehend(event):
+@app.on_s3_event(bucket='ab2-fraud-detection-348052051973',
+                 events=['s3:ObjectCreated:*'], prefix='input', suffix='csv')
+def trigger_detection(event):
     app.log.debug("Received event for bucket: %s, key: %s",
                   event.bucket, event.key)
     s3uri = 's3://' + event.bucket + '/' + event.key
@@ -34,9 +34,9 @@ def invoke_comprehend(event):
     app.log.debug("response: %s", response)
 
 
-@app.on_s3_event(bucket='chalice-test-output-348052051973',
-                 events=['s3:ObjectCreated:*'], suffix='predictions.jsonl')
-def notify_comprehend_done_v2(event):
+@app.on_s3_event(bucket='ab2-fraud-detection-348052051973',
+                 events=['s3:ObjectCreated:*'], prefix='output', suffix='predictions.jsonl')
+def handle_fraud_detection_result(event):
     app.log.debug("Received event for bucket: %s, key: %s",
                   event.bucket, event.key)
     s3uri = 's3://' + event.bucket + '/' + event.key
