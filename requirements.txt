@@ -1,2 +1,3 @@
 boto3>=1.9.91
 pandas>=1.1.0
+fsspec

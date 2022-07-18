@@ -2,6 +2,7 @@ import logging
 from chalice import Chalice
 import boto3
 import pandas as pd
+import json
 
 app = Chalice(app_name='helloworld')
 app.log.setLevel(logging.DEBUG)
@@ -34,25 +35,33 @@ def invoke_comprehend(event):
 
 
 @app.on_s3_event(bucket='chalice-test-output-348052051973',
-                 events=['s3:ObjectCreated:*'], suffix='output.tar.gz')
+                 events=['s3:ObjectCreated:*'], suffix='predictions.jsonl')
 def notify_comprehend_done_v2(event):
     app.log.debug("Received event for bucket: %s, key: %s",
                   event.bucket, event.key)
     s3uri = 's3://' + event.bucket + '/' + event.key
 
-    prediction_df = pd.read_json(s3uri, compression='gzip', error_bad_lines=False, lines=True)
+    prediction_df = pd.read_json(s3uri, lines=True)
     prediction_df = prediction_df.set_index("Line")
+    filename = prediction_df["File"][0]
     prediction_df = prediction_df.drop(columns=["File"])
-    app.log.debug("prediction: %s", prediction_df.head(10))
+
+    # app.log.debug("prediction: %s", prediction_df.head(10))
+    result = pd.concat([prediction_df, prediction_df['Classes'].apply(json_to_series)], axis=1)
+    result.loc[result["1"]>0.5, ["fraud"]] = True
+    result = result.fillna(False)
+    fraud_count = result.loc[result["fraud"] == True].shape[0]
 
     response = sns_client.publish(
         TopicArn='arn:aws:sns:us-east-1:348052051973:MyTopic',
-        Message=prediction_df.to_json(),
-        MessageStructure='json',
-        Subject=f'{s3uri} has new result',
+        Message=f'For more details, please go to {s3uri}',
+        Subject=f'{filename} has {fraud_count} fraud detected',
     )
     app.log.debug("response: %s", response)
 
+def json_to_series(labels):
+    keys, values = zip(*[(label["Name"], label["Score"]) for label in labels])
+    return pd.Series(values, index=keys)
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
 #
