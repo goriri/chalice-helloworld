@@ -3,13 +3,13 @@
     {
       "name": "managed-layer",
       "resource_type": "lambda_layer",
-      "layer_version_arn": "arn:aws:lambda:us-east-1:348052051973:layer:ab2-text-content-moderation-dev-managed-layer:3"
+      "layer_version_arn": "arn:aws:lambda:us-east-1:348052051973:layer:ab2-text-content-moderation-dev-managed-layer:11"
     },
     {
-      "name": "default-role",
+      "name": "trigger_detection_role",
       "resource_type": "iam_role",
-      "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev",
-      "role_name": "ab2-text-content-moderation-dev"
+      "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev-trigger_detection",
+      "role_name": "ab2-text-content-moderation-dev-trigger_detection"
     },
     {
       "name": "trigger_detection",
@@ -23,15 +23,44 @@
       "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-trigger_detection"
     },
     {
-      "name": "handle_fraud_detection_result",
-      "resource_type": "lambda_function",
-      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_fraud_detection_result"
+      "name": "handle_scam_detection_result_role",
+      "resource_type": "iam_role",
+      "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev-handle_scam_detection_result",
+      "role_name": "ab2-text-content-moderation-dev-handle_scam_detection_result"
     },
     {
-      "name": "handle_fraud_detection_result-s3event",
+      "name": "handle_scam_detection_result",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_scam_detection_result"
+    },
+    {
+      "name": "handle_scam_detection_result-s3event",
       "resource_type": "s3_event",
       "bucket": "ab2-fraud-detection-348052051973",
-      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_fraud_detection_result"
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_scam_detection_result"
+    },
+    {
+      "name": "handle_toxic_detection_result_role",
+      "resource_type": "iam_role",
+      "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev-handle_toxic_detection_result",
+      "role_name": "ab2-text-content-moderation-dev-handle_toxic_detection_result"
+    },
+    {
+      "name": "handle_toxic_detection_result",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_toxic_detection_result"
+    },
+    {
+      "name": "handle_toxic_detection_result-s3event",
+      "resource_type": "s3_event",
+      "bucket": "ab2-fraud-detection-348052051973",
+      "lambda_arn": "arn:aws:lambda:us-east-1:348052051973:function:ab2-text-content-moderation-dev-handle_toxic_detection_result"
+    },
+    {
+      "name": "untar_result_role",
+      "resource_type": "iam_role",
+      "role_arn": "arn:aws:iam::348052051973:role/ab2-text-content-moderation-dev-untar_result",
+      "role_name": "ab2-text-content-moderation-dev-untar_result"
     },
     {
       "name": "untar_result",

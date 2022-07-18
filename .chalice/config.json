@@ -3,7 +3,9 @@
   "app_name": "ab2-text-content-moderation",
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "autogen_policy": false,
+      "iam_policy_file": "dev-policy.json"
     }
   },
   "lambda_memory_size": 256,
